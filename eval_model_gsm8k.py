@@ -84,7 +84,9 @@ def main():
     parser.add_argument('--max_seq_len', default=512, type=int)
     parser.add_argument('--use_moe', default=False, type=bool)
     parser.add_argument('--model_mode', default=1, type=int)
-    parser.add_argument('--load', default=1, type=int)
+    parser.add_argument('--load', default=0, type=int)
+    parser.add_argument('--lora_name', default='None', type=str)
+
 
     args = parser.parse_args()
 

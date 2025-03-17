@@ -14,9 +14,11 @@ warnings.filterwarnings('ignore')
 
 def init_model(args):
     """Initialize the MiniMind model and tokenizer."""
+    
     tokenizer = AutoTokenizer.from_pretrained('./model/minimind_tokenizer')
 
     if args.load == 0:
+        print("USE OWN MODEL")
         moe_path = '_moe' if args.use_moe else ''
         modes = {0: 'pretrain', 1: 'full_sft', 2: 'rlhf', 3: 'reason'}
         ckp = f'./{args.out_dir}/{modes[args.model_mode]}_{args.dim}{moe_path}.pth'
@@ -35,6 +37,7 @@ def init_model(args):
             apply_lora(model)
             load_lora(model, f'./{args.out_dir}/lora/{args.lora_name}_{args.dim}.pth')
     else:
+        print("USE MINIMIND2")
         transformers_model_path = './MiniMind2'
         tokenizer = AutoTokenizer.from_pretrained(transformers_model_path)
         model = AutoModelForCausalLM.from_pretrained(transformers_model_path, trust_remote_code=True)
@@ -91,8 +94,9 @@ def main():
     parser.add_argument('--max_seq_len', default=512, type=int)
     parser.add_argument('--use_moe', default=False, type=bool)
     parser.add_argument('--model_mode', default=1, type=int)
-    parser.add_argument('--load', default=1, type=int)
+    parser.add_argument('--load', default=0, type=int)
     parser.add_argument('--num_samples', default=50, type=int, help="Number of test samples")
+    parser.add_argument('--lora_name', default='None', type=str)
 
     args = parser.parse_args()
 
@@ -166,7 +170,7 @@ def main():
 
     # Print sample outputs
     print("\n🔹 Sample Predictions:")
-    for sample in predictions[:3]:  # Show 5 samples
+    for sample in predictions[:5]:  # Show 5 samples
         print(f"\n📝 Question: {sample['question']}")
         # for idx, option in enumerate(sample["options"], start=1):
         #     print(f"{chr(64+idx)}. {option}")
