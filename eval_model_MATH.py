@@ -3,7 +3,7 @@ import torch
 import warnings
 import re
 import numpy as np
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from model.model import MiniMindLM
 from model.LMConfig import LMConfig
@@ -48,8 +48,12 @@ def init_model(args):
 
 def load_aimo_dataset(split="train"):
     """Load AI-MO/aimo-validation-amc dataset from Hugging Face."""
-    dataset = load_dataset("AI-MO/aimo-validation-amc", split=split)
-    return dataset
+    # dataset1 = load_dataset("AI-MO/aimo-validation-amc", split=split)
+    dataset2 = load_dataset("AI-MO/aimo-validation-math-level-5", split=split)
+    dataset3 = load_dataset("AI-MO/aimo-validation-math-level-4", split=split)
+    # dataset_combined = concatenate_datasets([dataset1, dataset2, dataset3])
+    dataset_combined = concatenate_datasets([dataset2, dataset3])
+    return dataset_combined
 
 
 # def extract_mcq_answer(prediction):
@@ -124,7 +128,7 @@ def main():
 
         # Structure the model prompt
         # messages = [{"role": "user", "content": f"{formatted_question}\nChoose the correct answer (A, B, C, D, or E):"}
-        messages = [{"role": "user", "content": f"Solve the following math problem step by step:\n\n{question}"}]
+        messages = [{"role": "user", "content": f"Solve the following math problem step by step, then give the numeric answer at the end:\n\n{question}"}]
         formatted_input = tokenizer.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True
         )[-args.max_seq_len + 1:]
@@ -155,7 +159,7 @@ def main():
             "question": question,
             # "options": options,
             "ground_truth": ground_truth,
-            "prediction": full_answer,
+            "prediction": answer,
             "correct": is_correct
         })
 
