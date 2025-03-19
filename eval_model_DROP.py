@@ -81,9 +81,10 @@ def main():
     parser.add_argument('--max_seq_len', default=512, type=int)
     parser.add_argument('--use_moe', default=False, type=bool)
     parser.add_argument('--model_mode', default=1, type=int, help="0: Pretrain, 1: SFT, 2: RLHF, 3: Reason")
+    parser.add_argument('--lora_name', default='None', type=str)
     
     # ✅ Add `load` argument to prevent missing attribute error
-    parser.add_argument('--load', default=1, type=int, help="0: Custom weights, 1: Transformers model")
+    parser.add_argument('--load', default=0, type=int, help="0: Custom weights, 1: Transformers model")
 
     args = parser.parse_args()
 
